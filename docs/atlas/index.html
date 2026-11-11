@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>French Literature Topic Atlas</title>
-<meta name="description" content="Interactive 3D map of the topics found by BERTopic in French literature, one model per decade.">
+<title>Atlante dei temi · La rappresentazione del sé nelle scritture autobiografiche femminili francesi: un’analisi in diacronia tra distant e close reading basata su un corpus di testi.</title>
+<meta name="description" content="Mappa interattiva in 3D dei temi individuati da BERTopic nelle scritture del sé di autrici francesi, con un modello per decennio.">
 <script>
   // ?embed (e.g. inside an iframe on the project site): hide the atlas title, the host page has its own.
   if (new URLSearchParams(location.search).has("embed")) document.documentElement.classList.add("embed");
@@ -18,23 +18,23 @@
 <div class="app">
   <header>
     <div class="brand">
-      <span class="eyebrow">BERTopic · one model per decade · 3D UMAP</span>
-      <h1>French Literature Topic Atlas</h1>
+      <span class="eyebrow">BERTopic · un modello per decennio · UMAP 3D</span>
+      <h1>Atlante dei temi</h1>
     </div>
-    <nav class="decades" id="decades" aria-label="Decade"></nav>
+    <nav class="decades" id="decades" aria-label="Decennio"></nav>
   </header>
 
   <main>
-    <section class="viewer" aria-label="3D map of the documents">
+    <section class="viewer" aria-label="Mappa in 3D dei frammenti testuali">
       <div id="scene"></div>
       <div class="labels-layer" id="labels-layer"></div>
       <div class="stats" id="stats"></div>
       <div class="controls">
-        <button type="button" id="t-others" aria-pressed="true"><span class="tick"></span>Other documents</button>
-        <button type="button" id="t-labels" aria-pressed="true"><span class="tick"></span>Labels</button>
-        <button type="button" id="t-rotate" aria-pressed="false"><span class="tick"></span>Rotate</button>
-        <button type="button" id="reset" class="plain">Reset view</button>
-        <span class="hint">Drag to orbit · scroll to zoom · right-drag to pan</span>
+        <button type="button" id="t-others" aria-pressed="true"><span class="tick"></span>Altri frammenti</button>
+        <button type="button" id="t-labels" aria-pressed="true"><span class="tick"></span>Etichette</button>
+        <button type="button" id="t-rotate" aria-pressed="false"><span class="tick"></span>Rotazione</button>
+        <button type="button" id="reset" class="plain">Ripristina vista</button>
+        <span class="hint">Trascina per ruotare · scorri per ingrandire · trascina con il tasto destro per spostare</span>
       </div>
       <div class="tooltip" id="tooltip" hidden></div>
       <div class="loading on" id="loading" role="status" aria-live="polite">
@@ -51,21 +51,22 @@
           </svg>
           <span class="lis-shadow"></span>
         </div>
-        <span class="loading-text" id="loading-text">Opening the atlas</span>
+        <span class="loading-text" id="loading-text">Caricamento dell’atlante</span>
       </div>
     </section>
 
-    <aside aria-label="Topics">
+    <aside aria-label="Temi">
       <div class="legend-head">
-        <h2>20 largest topics</h2>
-        <span>documents</span>
+        <h2>I 20 temi più frequenti</h2>
+        <span>frammenti</span>
       </div>
       <ul class="legend" id="legend"></ul>
       <div class="detail" id="detail" hidden></div>
       <div class="note" id="note">
-        Each point is a text chunk. Positions come from a 3D UMAP of the MiniLM embeddings
-        (n_neighbors 15, min_dist 0.15, cosine), so only nearby points are meaningful.
-        Click a topic to focus it.
+        Ogni punto rappresenta un frammento di testo. Le posizioni derivano da una proiezione UMAP in 3D
+        degli embedding MiniLM (n_neighbors 15, min_dist 0.15, distanza del coseno):
+        sono quindi significative soltanto le relazioni di vicinanza tra i punti.
+        Seleziona un tema per metterlo in evidenza.
       </div>
     </aside>
   </main>
@@ -77,7 +78,7 @@
     const el = document.getElementById("loading");
     if (el) {
       el.classList.add("on", "failed");
-      document.getElementById("loading-text").textContent = `Something went wrong: ${e.message || "a file did not load"}.`;
+      document.getElementById("loading-text").textContent = `Si è verificato un errore: ${e.message || "impossibile caricare un file"}.`;
     }
   }, true);
 </script>

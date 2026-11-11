@@ -47,12 +47,16 @@ a { color: var(--accent); }
   background: var(--panel);
 }
 .site-title {
+  flex: 1 1 640px;
+  min-width: 0;
+  max-width: 80ch;
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 19px;
   color: var(--fg);
   text-decoration: none;
-  line-height: 1.2;
+  line-height: 1.4;
+  overflow-wrap: break-word;
 }
 .tabs { display: flex; gap: 4px; flex-wrap: wrap; }
 .tabs a {

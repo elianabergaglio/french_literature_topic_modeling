@@ -11,7 +11,7 @@
       if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
       const text = await res.text();
       const start = text.search(/=\s*[\[{]/);  // the "=" right before the data object or array
-      if (start < 0) throw new Error(`${path}: unexpected format`);
+      if (start < 0) throw new Error(`${path}: formato inatteso`);
       return JSON.parse(text.slice(start + 1).trim().replace(/;\s*$/, ""));
     } catch (err) {
       if (location.protocol !== "file:") throw err;
@@ -20,7 +20,7 @@
         s.charset = "utf-8";
         s.src = path;
         s.onload = resolve;
-        s.onerror = () => reject(new Error(`could not load ${path}`));
+        s.onerror = () => reject(new Error(`impossibile caricare ${path}`));
         document.head.appendChild(s);
       });
       return read();
@@ -31,10 +31,10 @@
   try {
     manifest = await loadDataFile("data/manifest.js", () => window.TOPIC_ATLAS_MANIFEST);
   } catch (err) {
-    setLoading(`Could not load data/manifest.js (${err.message}).`, true);
+    setLoading(`Impossibile caricare data/manifest.js (${err.message}).`, true);
     return;
   }
-  const fmt = new Intl.NumberFormat("en-US");
+  const fmt = new Intl.NumberFormat("it-IT");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ---------- Scene ----------
@@ -146,7 +146,7 @@
     if (cache.has(decade)) return cache.get(decade);
     const p = loadDataFile(`data/${decade}.js`, () => {
       const d = window.TOPIC_ATLAS && window.TOPIC_ATLAS[decade];
-      if (!d) throw new Error("no data");
+      if (!d) throw new Error("dati assenti");
       return d;
     });
     cache.set(decade, p);
@@ -185,7 +185,7 @@
       const el = document.createElement("div");
       el.className = "topic-label";
       el.innerHTML = `<i style="background:${t.color}"></i>`;
-      el.append(t.label);
+      el.append(`Tema ${t.id}: ${t.words.slice(0, 3).join(", ")}`);
       const obj = new CSS2DObject(el);
       obj.position.set(...t.centroid);
       return obj;
@@ -243,7 +243,7 @@
       b.type = "button";
       b.setAttribute("aria-pressed", "false");
       b.innerHTML = `<span class="dot" style="background:${t.color}"></span>
-        <span class="name"><b>Topic ${t.id}</b> <span></span></span>
+        <span class="name"><b>Tema ${t.id}</b> <span></span></span>
         <span class="count">${fmt.format(t.count)}</span>`;
       b.querySelector(".name span").textContent = t.words.slice(0, 3).join(", ");
       b.addEventListener("click", () => setFocus(focus === i ? null : i));
@@ -256,16 +256,16 @@
     const li = document.createElement("li");
     li.className = "other";
     li.innerHTML = `<button type="button" tabindex="-1" aria-hidden="true"><span class="dot"></span>
-      <span class="name"><span>Other topics and outliers</span></span>
+      <span class="name"><span>Altri temi e frammenti non assegnati</span></span>
       <span class="count">${fmt.format(data.nDocs - shown)}</span></button>`;
     ul.appendChild(li);
   }
 
   function renderStats(data) {
     $("stats").innerHTML =
-      `<span><b>${fmt.format(data.nDocs)}</b> chunks</span>` +
-      `<span><b>${data.nTopics}</b> topics</span>` +
-      `<span><b>${fmt.format(data.nOutliers)}</b> outliers</span>`;
+      `<span><b>${fmt.format(data.nDocs)}</b> frammenti</span>` +
+      `<span><b>${data.nTopics}</b> temi</span>` +
+      `<span><b>${fmt.format(data.nOutliers)}</b> non assegnati</span>`;
     $("stats").title = data.run;
   }
 
@@ -280,10 +280,10 @@
     } else {
       const t = data.topics[i];
       detail.hidden = false;
-      detail.innerHTML = `<h3><i style="background:${t.color}"></i>Topic ${t.id}</h3>
+      detail.innerHTML = `<h3><i style="background:${t.color}"></i>Tema ${t.id}</h3>
         <p class="words"></p>
-        <p>${fmt.format(t.count)} chunks · ${(100 * t.count / data.nDocs).toFixed(1)}% of the decade</p>
-        <button type="button" class="clear">Show all topics</button>`;
+        <p>${fmt.format(t.count)} frammenti · ${fmt.format(Number((100 * t.count / data.nDocs).toFixed(1)))}% del decennio</p>
+        <button type="button" class="clear">Mostra tutti i temi</button>`;
       detail.querySelector(".words").textContent = t.words.join(", ");
       detail.querySelector(".clear").addEventListener("click", () => setFocus(null));
       flyTo(new THREE.Vector3(...t.centroid));
@@ -319,7 +319,7 @@
   async function show(decade) {
     const token = ++showToken;
     document.querySelectorAll("#decades button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.decade === decade)));
-    setLoading(`Opening ${decade.replace("-", "–")}`);
+    setLoading(`Caricamento del decennio ${decade.replace("-", "–")}`);
     $("tooltip").hidden = true;
     marker.visible = false;
     const faded = current ? fadeTo(0, 240) : Promise.resolve();
@@ -329,7 +329,7 @@
       data = await loadDecade(decade);
       await faded;
     } catch (err) {
-      if (token === showToken) setLoading(`Could not load the data for ${decade} (${err.message}).`, true);
+      if (token === showToken) setLoading(`Impossibile caricare i dati del decennio ${decade} (${err.message}).`, true);
       return;
     }
     if (token !== showToken) return;  // another decade was picked meanwhile
@@ -419,7 +419,7 @@
 
     tip.innerHTML = `<div class="t-topic"><i></i><span></span></div><div class="t-text"></div>`;
     tip.querySelector("i").style.background = topic ? topic.color : "var(--noise)";
-    tip.querySelector(".t-topic span").textContent = topic ? topic.label : "Other topic or outlier";
+    tip.querySelector(".t-topic span").textContent = topic ? `Tema ${topic.id}: ${topic.words.slice(0, 3).join(", ")}` : "Altro tema o frammento non assegnato";
     tip.querySelector(".t-text").textContent = `“${current.data.snippets[doc]}”`;
     tip.hidden = false;
     const { x, y, w, h } = pointerPx;
@@ -475,7 +475,7 @@
   const fromHash = location.hash.slice(1);
   const first = manifest.find((m) => m.decade === fromHash)?.decade ?? manifest.find((m) => m.decade === "1961-1970")?.decade ?? manifest[0]?.decade;
   if (first) show(first);
-  else setLoading("No data found. Run export_3d.py to create data/manifest.js and the decade files.", true);
+  else setLoading("Nessun dato disponibile per l’atlante.", true);
 
   // A link or the host page can switch decade by changing the hash (e.g. atlas/#1971-1980).
   window.addEventListener("hashchange", () => {
