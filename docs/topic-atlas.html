@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topic Atlas · French Literature Topic Modeling</title>
+<meta name="description" content="Interactive 3D map of the topics found by BERTopic in French literature, one model per decade.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="full">
+<header class="site-header">
+  <a class="site-title" href="./">French Literature Topic Modeling</a>
+  <nav class="tabs" aria-label="Sections">
+    <a href="./">Home</a>
+    <a href="corpus.html">Corpus</a>
+    <a href="topic-atlas.html" aria-current="page">Topic Atlas</a>
+  </nav>
+</header>
+
+<iframe class="atlas-frame" id="atlas" title="Topic atlas" allow="fullscreen"></iframe>
+
+<script>
+  // The atlas lives in atlas/ and runs in its own iframe.
+  // This page's hash picks the decade (topic-atlas.html#1920-1930), so a decade can be linked directly.
+  const frame = document.getElementById("atlas");
+  frame.src = "atlas/?embed" + location.hash;
+
+  window.addEventListener("hashchange", () => {
+    if (frame.contentWindow) frame.contentWindow.location.hash = location.hash;
+  });
+
+  // Copy the decade chosen inside the atlas back to this page's URL, so it can be shared.
+  setInterval(() => {
+    try {
+      const inner = frame.contentWindow.location.hash;
+      if (inner && inner !== location.hash) history.replaceState(null, "", inner);
+    } catch (e) { /* not loaded yet */ }
+  }, 500);
+</script>
+</body>
+</html>

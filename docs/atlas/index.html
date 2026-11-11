@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>French Literature Topic Atlas</title>
+<meta name="description" content="Interactive 3D map of the topics found by BERTopic in French literature, one model per decade.">
+<script>
+  // ?embed (e.g. inside an iframe on the project site): hide the atlas title, the host page has its own.
+  if (new URLSearchParams(location.search).has("embed")) document.documentElement.classList.add("embed");
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="atlas.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">BERTopic · one model per decade · 3D UMAP</span>
+      <h1>French Literature Topic Atlas</h1>
+    </div>
+    <nav class="decades" id="decades" aria-label="Decade"></nav>
+  </header>
+
+  <main>
+    <section class="viewer" aria-label="3D map of the documents">
+      <div id="scene"></div>
+      <div class="labels-layer" id="labels-layer"></div>
+      <div class="stats" id="stats"></div>
+      <div class="controls">
+        <button type="button" id="t-others" aria-pressed="true"><span class="tick"></span>Other documents</button>
+        <button type="button" id="t-labels" aria-pressed="true"><span class="tick"></span>Labels</button>
+        <button type="button" id="t-rotate" aria-pressed="false"><span class="tick"></span>Rotate</button>
+        <button type="button" id="reset" class="plain">Reset view</button>
+        <span class="hint">Drag to orbit · scroll to zoom · right-drag to pan</span>
+      </div>
+      <div class="tooltip" id="tooltip" hidden></div>
+      <div class="loading on" id="loading" role="status" aria-live="polite">
+        <div class="lis-wrap" aria-hidden="true">
+          <!-- fleur-de-lis -->
+          <svg class="lis" viewBox="0 0 64 64" fill="currentColor">
+            <path d="M32 3C40 13 41 25 32 37C23 25 24 13 32 3Z"/>
+            <path d="M30 36C20 36 9 31 8 21C7.5 15 12 11.5 16.5 13C19 14 19.5 17.5 17 19C15.5 17 13 17.5 13 20.5C13.5 27 21 30 29 30Z"/>
+            <path d="M34 36C44 36 55 31 56 21C56.5 15 52 11.5 47.5 13C45 14 44.5 17.5 47 19C48.5 17 51 17.5 51 20.5C50.5 27 43 30 35 30Z"/>
+            <rect x="19" y="36" width="26" height="5" rx="1.5"/>
+            <path d="M28 41.5C23 44 17 46 15 53C21 53 27 49 31 43.5Z"/>
+            <path d="M36 41.5C41 44 47 46 49 53C43 53 37 49 33 43.5Z"/>
+            <path d="M29.8 41.5H34.2L32 51.5Z"/>
+          </svg>
+          <span class="lis-shadow"></span>
+        </div>
+        <span class="loading-text" id="loading-text">Opening the atlas</span>
+      </div>
+    </section>
+
+    <aside aria-label="Topics">
+      <div class="legend-head">
+        <h2>20 largest topics</h2>
+        <span>documents</span>
+      </div>
+      <ul class="legend" id="legend"></ul>
+      <div class="detail" id="detail" hidden></div>
+      <div class="note" id="note">
+        Each point is a text chunk. Positions come from a 3D UMAP of the MiniLM embeddings
+        (n_neighbors 15, min_dist 0.15, cosine), so only nearby points are meaningful.
+        Click a topic to focus it.
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+  // Show any script error in the viewer instead of leaving "Loading…" on screen.
+  window.addEventListener("error", (e) => {
+    const el = document.getElementById("loading");
+    if (el) {
+      el.classList.add("on", "failed");
+      document.getElementById("loading-text").textContent = `Something went wrong: ${e.message || "a file did not load"}.`;
+    }
+  }, true);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/renderers/CSS2DRenderer.js"></script>
+<script src="atlas.js"></script>
+</body>
+</html>
