@@ -93,6 +93,13 @@ a { color: var(--accent); }
   font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500;
 }
 .lead { font-size: 18px; color: var(--muted); }
+.page .project-author {
+  margin: 24px 0;
+  text-align: left;
+  hyphens: none;
+  color: var(--muted);
+}
+.project-author strong { color: var(--fg); font-weight: 600; }
 .todo {
   padding: 12px 16px;
   border: 1px dashed var(--line);
