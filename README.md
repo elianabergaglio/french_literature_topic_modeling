@@ -29,4 +29,4 @@ python3 -m http.server 8000 --directory docs   # then open http://localhost:8000
 ### Publish
 
 In the GitHub repo: Settings → Pages → Source: "Deploy from a branch", Branch: `main`, folder: `/docs`.
-The site is then served at `https://<user>.github.io/french_literature_topic_modeling/`.
+The site is then served at [`https://elianabergaglio.github.io/french_literature_topic_modeling/`](https://elianabergaglio.github.io/french_literature_topic_modeling/).
