@@ -129,6 +129,7 @@
 
   // ---------- State ----------
   const SIZE_TOPIC = 0.016, SIZE_OTHER = 0.011;
+  const LABELLED = 20;     // labels on the map for this many largest topics (plus the one hovered or selected)
   const cache = new Map();
   let current = null;      // decade view: { data, bg, fg, labels }
   let focus = null;        // topic index in data.topics, or null
@@ -156,10 +157,11 @@
 
   function buildView(data) {
     const pos = decode(data.pos, Int16Array);
-    const idx = decode(data.topicIdx, Int8Array);
+    const idx = decode(data.topicIdx, data.topicIdxBits === 16 ? Int16Array : Int8Array);
     const k = data.scale / 32767;
     const n = idx.length;
-    // Two point clouds: documents of the 20 largest topics, and everything else.
+    // Two point clouds: documents of the topics listed in the data, and everything else (outliers and
+    // unlisted topics; empty when the data has every topic and no outliers).
     const split = { fg: [], bg: [] };
     for (let i = 0; i < n; i++) (idx[i] >= 0 ? split.fg : split.bg).push(i);
 
@@ -190,7 +192,9 @@
       obj.position.set(...t.centroid);
       return obj;
     });
-    return { data, idx, bg, fg, topicColors, labels };
+    const bySize = data.topics.map((t, i) => i).sort((a, b) => data.topics[b].count - data.topics[a].count);
+    const labelled = new Set(bySize.slice(0, LABELLED));
+    return { data, idx, bg, fg, topicColors, labels, labelled };
   }
 
   // Colors and opacity of every point, from the current focus / hover / toggles.
@@ -217,7 +221,7 @@
     v.bg.visible = showOthers;
 
     v.labels.forEach((l, i) => {
-      l.visible = showLabels || i === active;
+      l.visible = (showLabels && v.labelled.has(i)) || i === active;
       l.element.classList.toggle("dim", active != null && i !== active);
     });
   }
@@ -252,13 +256,22 @@
       li.appendChild(b);
       ul.appendChild(li);
     });
+    const all = data.topics.length >= data.nTopics;
+    $("legend-title").textContent = all ? `Tutti i temi (${data.nTopics})` : `I ${data.topics.length} temi più frequenti`;
     const shown = data.topics.reduce((s, t) => s + t.count, 0);
-    const li = document.createElement("li");
-    li.className = "other";
-    li.innerHTML = `<button type="button" tabindex="-1" aria-hidden="true"><span class="dot"></span>
-      <span class="name"><span>Altri temi e frammenti non assegnati</span></span>
-      <span class="count">${fmt.format(data.nDocs - shown)}</span></button>`;
-    ul.appendChild(li);
+    const rest = data.nDocs - shown;
+    if (rest > 0) {
+      const hidden = data.outliersIncluded === false;
+      const li = document.createElement("li");
+      li.className = "other";
+      li.innerHTML = `<button type="button" tabindex="-1" aria-hidden="true"><span class="dot"></span>
+        <span class="name"><span></span></span>
+        <span class="count">${fmt.format(rest)}</span></button>`;
+      li.querySelector(".name span").textContent = hidden
+        ? (all ? "Frammenti non assegnati (non mostrati)" : "Altri temi; frammenti non assegnati non mostrati")
+        : (all ? "Frammenti non assegnati" : "Altri temi e frammenti non assegnati");
+      ul.appendChild(li);
+    }
   }
 
   function renderStats(data) {
@@ -347,6 +360,7 @@
     $("detail").hidden = true;
     renderLegend(data);
     renderStats(data);
+    $("t-others").hidden = current.bg.userData.docs.length === 0;  // nothing to hide when every point has a topic
     paint();
     controls.target.set(0, 0, 0);
     flight = null;
@@ -380,6 +394,9 @@
   toggle("t-others", (on) => { showOthers = on; if (current) paint(); });
   toggle("t-labels", (on) => { showLabels = on; if (current) paint(); });
   toggle("t-rotate", (on) => { controls.autoRotate = on; });
+  // Rotation starts on, unless the visitor asked the system for reduced motion.
+  controls.autoRotate = !reducedMotion;
+  $("t-rotate").setAttribute("aria-pressed", String(controls.autoRotate));
   $("reset").addEventListener("click", () => {
     camera.position.copy(HOME);
     if (current) setFocus(null);

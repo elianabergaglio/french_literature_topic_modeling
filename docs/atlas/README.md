@@ -1,7 +1,8 @@
 # French Literature Topic Atlas
 
 Interactive 3D map of the topics found by BERTopic in French literature, one model per decade.
-Each point is a text chunk; the 20 largest topics of each decade are colored and labelled.
+Each point is a text chunk; every topic has its own color, and the 20 largest topics are labelled.
+Outliers (chunks BERTopic assigned to no topic) are left out. The map rotates on its own at first.
 
 A static page with no build step: copy this folder into the site and it works.
 
@@ -9,7 +10,7 @@ A static page with no build step: copy this folder into the site and it works.
 index.html    page markup
 atlas.css     styles (light and dark theme)
 atlas.js      Three.js scene, decade switcher, legend, hover tooltips
-data/         manifest.js + one <decade>.js per decade (~27 MB in total)
+data/         manifest.js + one <decade>.js per decade (~12 MB in total)
 ```
 
 Three.js 0.147 (pre-built files) comes from cdn.jsdelivr.net, and the fonts from Google Fonts.
@@ -56,15 +57,16 @@ The data files are created by `export_3d.py` in the thesis repo, next to the BER
 (`plot_per_tesi/datamap_topics/`):
 
 ```
-python export_3d.py --data data-20261110T201631Z-1-001/data --out <site repo>/atlas/data
+python export_3d.py --data data-20261110T201631Z-1-001/data --top 0 --no-outliers --out <site repo>/docs/atlas/data
 ```
 
-`--top N` changes how many topics are colored (default 20).
+`--top 0` colors every topic (`--top N`: only the N largest). `--no-outliers` leaves the outliers out of the files.
+The 20 largest topics keep the colors of the 2D plots; the others get generated colors (no greens).
 
 Each `data/<decade>.js` holds:
 - the topics: id, label, top 10 words, size, color, 3D centroid;
-- per document: its 3D position (int16, base64), the index of its topic in that list (-1 for another
-  topic or an outlier), and its first ~150 characters, shown on hover.
+- per document shown: its 3D position (int16, base64), the index of its topic in that list (-1 for an
+  unlisted topic or an outlier), and its first ~150 characters, shown on hover.
 
 They are plain scripts, `(window.TOPIC_ATLAS = ...)["1961-1970"] = {...};`, not JSON, so the page also
 works from disk. Over HTTP, `atlas.js` fetches them and parses the object.

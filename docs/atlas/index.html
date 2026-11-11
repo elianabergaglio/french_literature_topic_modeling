@@ -32,7 +32,7 @@
       <div class="controls">
         <button type="button" id="t-others" aria-pressed="true"><span class="tick"></span>Altri frammenti</button>
         <button type="button" id="t-labels" aria-pressed="true"><span class="tick"></span>Etichette</button>
-        <button type="button" id="t-rotate" aria-pressed="false"><span class="tick"></span>Rotazione</button>
+        <button type="button" id="t-rotate" aria-pressed="true"><span class="tick"></span>Rotazione</button>
         <button type="button" id="reset" class="plain">Ripristina vista</button>
         <span class="hint">Trascina per ruotare · scorri per ingrandire · trascina con il tasto destro per spostare</span>
       </div>
@@ -57,7 +57,7 @@
 
     <aside aria-label="Temi">
       <div class="legend-head">
-        <h2>I 20 temi più frequenti</h2>
+        <h2 id="legend-title">Temi</h2>
         <span>frammenti</span>
       </div>
       <ul class="legend" id="legend"></ul>
@@ -66,6 +66,7 @@
         Ogni punto rappresenta un frammento di testo. Le posizioni derivano da una proiezione UMAP in 3D
         degli embedding MiniLM (n_neighbors 15, min_dist 0.15, distanza del coseno):
         sono quindi significative soltanto le relazioni di vicinanza tra i punti.
+        I frammenti non assegnati a nessun tema (outlier) non sono mostrati.
         Seleziona un tema per metterlo in evidenza.
       </div>
     </aside>
