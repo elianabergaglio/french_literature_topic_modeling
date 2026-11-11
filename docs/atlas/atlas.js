@@ -187,7 +187,7 @@
       const el = document.createElement("div");
       el.className = "topic-label";
       el.innerHTML = `<i style="background:${t.color}"></i>`;
-      el.append(`Tema ${t.id}: ${t.words.slice(0, 3).join(", ")}`);
+      el.append(`Topic ${t.id}: ${t.words.slice(0, 3).join(", ")}`);
       const obj = new CSS2DObject(el);
       obj.position.set(...t.centroid);
       return obj;
@@ -247,7 +247,7 @@
       b.type = "button";
       b.setAttribute("aria-pressed", "false");
       b.innerHTML = `<span class="dot" style="background:${t.color}"></span>
-        <span class="name"><b>Tema ${t.id}</b> <span></span></span>
+        <span class="name"><b>Topic ${t.id}</b> <span></span></span>
         <span class="count">${fmt.format(t.count)}</span>`;
       b.querySelector(".name span").textContent = t.words.slice(0, 3).join(", ");
       b.addEventListener("click", () => setFocus(focus === i ? null : i));
@@ -257,7 +257,7 @@
       ul.appendChild(li);
     });
     const all = data.topics.length >= data.nTopics;
-    $("legend-title").textContent = all ? `Tutti i temi (${data.nTopics})` : `I ${data.topics.length} temi più frequenti`;
+    $("legend-title").textContent = all ? `Tutti i topic (${data.nTopics})` : `I ${data.topics.length} topic più frequenti`;
     const shown = data.topics.reduce((s, t) => s + t.count, 0);
     const rest = data.nDocs - shown;
     if (rest > 0) {
@@ -268,8 +268,8 @@
         <span class="name"><span></span></span>
         <span class="count">${fmt.format(rest)}</span></button>`;
       li.querySelector(".name span").textContent = hidden
-        ? (all ? "Frammenti non assegnati (non mostrati)" : "Altri temi; frammenti non assegnati non mostrati")
-        : (all ? "Frammenti non assegnati" : "Altri temi e frammenti non assegnati");
+        ? (all ? "Frammenti non assegnati (non mostrati)" : "Altri topic; frammenti non assegnati non mostrati")
+        : (all ? "Frammenti non assegnati" : "Altri topic e frammenti non assegnati");
       ul.appendChild(li);
     }
   }
@@ -277,7 +277,7 @@
   function renderStats(data) {
     $("stats").innerHTML =
       `<span><b>${fmt.format(data.nDocs)}</b> frammenti</span>` +
-      `<span><b>${data.nTopics}</b> temi</span>` +
+      `<span><b>${data.nTopics}</b> topic</span>` +
       `<span><b>${fmt.format(data.nOutliers)}</b> non assegnati</span>`;
     $("stats").title = data.run;
   }
@@ -293,10 +293,10 @@
     } else {
       const t = data.topics[i];
       detail.hidden = false;
-      detail.innerHTML = `<h3><i style="background:${t.color}"></i>Tema ${t.id}</h3>
+      detail.innerHTML = `<h3><i style="background:${t.color}"></i>Topic ${t.id}</h3>
         <p class="words"></p>
         <p>${fmt.format(t.count)} frammenti · ${fmt.format(Number((100 * t.count / data.nDocs).toFixed(1)))}% del decennio</p>
-        <button type="button" class="clear">Mostra tutti i temi</button>`;
+        <button type="button" class="clear">Mostra tutti i topic</button>`;
       detail.querySelector(".words").textContent = t.words.join(", ");
       detail.querySelector(".clear").addEventListener("click", () => setFocus(null));
       flyTo(new THREE.Vector3(...t.centroid));
@@ -436,7 +436,7 @@
 
     tip.innerHTML = `<div class="t-topic"><i></i><span></span></div><div class="t-text"></div>`;
     tip.querySelector("i").style.background = topic ? topic.color : "var(--noise)";
-    tip.querySelector(".t-topic span").textContent = topic ? `Tema ${topic.id}: ${topic.words.slice(0, 3).join(", ")}` : "Altro tema o frammento non assegnato";
+    tip.querySelector(".t-topic span").textContent = topic ? `Topic ${topic.id}: ${topic.words.slice(0, 3).join(", ")}` : "Altro topic o frammento non assegnato";
     tip.querySelector(".t-text").textContent = `“${current.data.snippets[doc]}”`;
     tip.hidden = false;
     const { x, y, w, h } = pointerPx;

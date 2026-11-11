@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Atlante dei topic · La rappresentazione del sé nelle scritture autobiografiche femminili francesi: un’analisi in diacronia tra distant e close reading basata su un corpus di testi.</title>
-<meta name="description" content="Mappa interattiva in 3D dei temi individuati da BERTopic nelle scritture del sé di autrici francesi, con un modello per decennio.">
+<meta name="description" content="Mappa interattiva in 3D dei topic individuati da BERTopic nelle scritture del sé di autrici francesi, con un modello per decennio.">
 <script>
   // ?embed (e.g. inside an iframe on the project site): hide the atlas title, the host page has its own.
   if (new URLSearchParams(location.search).has("embed")) document.documentElement.classList.add("embed");
@@ -55,9 +55,9 @@
       </div>
     </section>
 
-    <aside aria-label="Temi">
+    <aside aria-label="Topic">
       <div class="legend-head">
-        <h2 id="legend-title">Temi</h2>
+        <h2 id="legend-title">Topic</h2>
         <span>frammenti</span>
       </div>
       <ul class="legend" id="legend"></ul>
@@ -66,8 +66,8 @@
         Ogni punto rappresenta un frammento di testo. Le posizioni derivano da una proiezione UMAP in 3D
         degli embedding MiniLM (n_neighbors 15, min_dist 0.15, distanza del coseno):
         sono quindi significative soltanto le relazioni di vicinanza tra i punti.
-        I frammenti non assegnati a nessun tema (outlier) non sono mostrati.
-        Seleziona un tema per metterlo in evidenza.
+        I frammenti non assegnati a nessun topic (outlier) non sono mostrati.
+        Seleziona un topic per metterlo in evidenza.
       </div>
     </aside>
   </main>
